@@ -148,3 +148,44 @@ def post_new_cafe():
     db.session.commit()
     return jsonify(response={"success": "Successfully added the new cafe."})
 ```
+
+## 設計route("update-price")
+這裡簡單的說明 PUT 跟 PATCH的差別，PUT一般是會直接替換掉你所選怎的整組資料，PATCH則是替換你所選擇的那筆資料中的特定一個Key的value，因為這裡我們只需要讓使用者更改價錢就行了，所以使用PATCH。
+```python3
+@app.route("/update-price/<cafe_id>", methods=["PATCH"]) #可以將<cafe_id>改成<int:cafe_id>，確保使用者輸入的是數字
+def update_price(cafe_id):
+    query_price = request.args.get("price") #?price=<variable>
+    cafe_selected = Cafe.query.filter_by(id=cafe_id).first() #由於每筆資料的id是唯一的，不用怕找到第二個
+    if cafe_selected:
+        cafe_selected.coffee_price = query_price
+        db.session.commit() #更改完後commit回去
+        return jsonify(response={"success": "Successfully update the price."})
+    else:
+        return jsonify(response={"error": "Sorry, A cafe with that is was not found in the database"})
+````
+
+## 設計route("/delete")
+這裡為了確保資料的安全性，這邊需要設計一個API_KEY，只有符合的才有刪除資料的資格。
+```python3
+@app.route("/report-closed/<cafe_id>", methods=["DELETE"])
+def delete_cafe(cafe_id):
+    cafe_selected = Cafe.query.filter_by(id=cafe_id).first()
+    api_key = request.args.get("api-key") #?api-key=<YOUR KEY>
+    if cafe_selected and api_key == API_KEY_FOR_DELETE: #API_KEY可以根據開發需求設計
+        db.session.delete(cafe_selected)
+        db.session.commit()
+        return jsonify(response={"success": "Successfully delete the cafe."})
+    elif not cafe_selected:
+        return jsonify(response={"error": "Sorry, A cafe with that is was not found in the database"})
+    else:
+        return jsonify(response={"error": "Sorry, That's not allowed. Make sur you have the correct api_key."})
+```
+
+## 相關資訊
+底下放比較重要的幾個module的Documentation，還有幾個我遇到且查過的Stackoverflow的資訊
+
+## 參考資料
+1.自己的文章：https://www.notion.so/Flask-09a2c321394f444bb4fe5803c04fda5b
+2.Flask-SQLalchemy：https://www.notion.so/RESTful-API-Note-9380b7d2606d49548b061b4c77d07cf4#70fcc299437d415f92fc6a5aeafc475f
+3.Flask：https://www.notion.so/RESTful-API-Note-9380b7d2606d49548b061b4c77d07cf4#eaa3aa8320644188b909d4693d850f6f
+Stackoverflow：https://www.notion.so/RESTful-API-Note-9380b7d2606d49548b061b4c77d07cf4#8cc0deb7035246fa981c4d949aa3b08d
