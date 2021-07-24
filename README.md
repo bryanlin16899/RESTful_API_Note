@@ -6,7 +6,7 @@ RESTful (Representational state transfer) ，REST 可以說是一個網路架構
 
 ## 建立 RESTful API
 首先假設你有一份關於一個地區適合遠端辦公的咖啡廳的各種資訊，將它建立成一個Database後就可以透過設計(GET、POST等等)的條件將資訊提供給連結你API的其他使用者。
-![image]()
+![image](https://github.com/bryanlin16899/RESTful_API_Note/blob/main/image/Database1.png)
 
 ## Walkthrough
 (P.S 程式碼說明會在#註解中)
